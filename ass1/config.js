@@ -24,14 +24,14 @@ var config = {
       id: "slug-style-id",
       alignment: "left",
       hidden: false,
-      title: "San Francisco",
-      image: "images/ein.gif",
+      title: "Central Texas, July 9th, 2025",
+      //   image: "images/ein.gif",
       description:
         "The first chapter contains a title, image, and camera view for San Francisco, California. Update the chapter data to make it your own.",
       location: {
-        center: [-122.418398, 37.759483],
-        zoom: 8.5,
-        pitch: 60,
+        center: [-99.2880556, 30.0005556],
+        zoom: 11,
+        pitch: 0,
         bearing: 0,
       },
       mapAnimation: "flyTo",
@@ -56,13 +56,13 @@ var config = {
       alignment: "right",
       hidden: false,
       title: "Second Title",
-      image: "images/globe.png",
+      //   image: "images/globe.png",
       description: "Copy these sections to add to your story.",
       location: {
-        center: [-77.020636, 38.8869],
-        zoom: 8.5,
-        pitch: 60,
-        bearing: -43.2,
+        center: [-99.03769, 29.946594],
+        zoom: 16,
+        pitch: 0,
+        bearing: 50,
         // flyTo additional controls-
         // These options control the flight curve, making it move
         // slowly and zoom out almost completely before starting
@@ -71,7 +71,7 @@ var config = {
         //curve: 1, // change the speed at which it zooms out
       },
       mapAnimation: "flyTo",
-      rotateAnimation: true,
+      rotateAnimation: false,
       callback: "",
       onChapterEnter: [],
       onChapterExit: [],
