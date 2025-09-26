@@ -55,9 +55,10 @@ var config = {
       id: "second-identifier",
       alignment: "right",
       hidden: false,
-      title: "Second Title",
+      title: "Centerpoint, TX",
       //   image: "images/globe.png",
-      description: "Copy these sections to add to your story.",
+      description:
+        '<div class="video-wrapper"><iframe width="360" height="203" src="https://www.youtube.com/embed/HqXXbjN-hhs?start=2100&amp;end=2265" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p class="caption" style="text-align:center;">Flooding at a bridge in Centerpoint, TX.</p>',
       location: {
         center: [-99.03769, 29.946594],
         zoom: 16,
