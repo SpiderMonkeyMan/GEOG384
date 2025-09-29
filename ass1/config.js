@@ -50,8 +50,8 @@ var config = {
         '<div class="video-wrapper"><iframe width="360" height="203" src="https://www.youtube.com/embed/HqXXbjN-hhs?start=2100&amp;end=2265" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p class="caption" style="text-align:center;">Here is a bridge over the Guadalupe River in Center Point, Texas on July 4th. This video demonstrates the immense destructive nature of the flooding. As you can see, the water carries an entire house along the river bank.</p>',
       location: {
         center: [-99.03769, 29.946594],
-        zoom: 16,
-        pitch: 0,
+        zoom: 17,
+        pitch: 60,
         bearing: 50,
         // flyTo additional controls-
         // These options control the flight curve, making it move
@@ -63,8 +63,16 @@ var config = {
       mapAnimation: "flyTo",
       rotateAnimation: false,
       callback: "",
-      onChapterEnter: [],
-      onChapterExit: [],
+      onChapterEnter: [
+        { rain: { density: 0.5 } },
+        {
+          marker: { add: true, coords: [-99.03769, 29.946594], color: "black" },
+        },
+      ],
+      onChapterExit: [
+        { rain: { density: 0 } },
+        { marker: { remove: true, coords: [-99.03769, 29.946594] } },
+      ],
     },
     {
       id: "third-identifier",
@@ -136,10 +144,12 @@ var config = {
           visibility: "visible",
           opacity: 0.6,
         },
+        { rain: { density: 0.5 } },
       ],
       onChapterExit: [
         { layer: "s-fld-haz-arse-featurestojso-b765rn", visibility: "none" },
         { layer: "watermarkcampmysticnewdata", visibility: "none" },
+        { rain: { density: 0 } },
       ],
     },
     {
@@ -167,6 +177,7 @@ var config = {
           visibility: "visible",
           opacity: 0.6,
         },
+        { rain: { density: 0.5 } },
       ],
       onChapterExit: [],
     },
@@ -192,6 +203,7 @@ var config = {
           layer: "s-fld-haz-arse-featurestojso-b765rn",
           visibility: "none",
         },
+        { rain: { density: 0.5 } },
       ],
       onChapterExit: [],
     },
@@ -212,7 +224,7 @@ var config = {
       mapAnimation: "flyTo",
       rotateAnimation: true,
       callback: "",
-      onChapterEnter: [],
+      onChapterEnter: [{ rain: { density: 0 } }],
       onChapterExit: [],
     },
   ],
