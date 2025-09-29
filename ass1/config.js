@@ -1,5 +1,5 @@
 var config = {
-  style: "mapbox://styles/mapbox/standard-satellite",
+  style: "mapbox://styles/jgray456/cmg584t1q009u01qtc7e338cb/",
   accessToken: window.MAPBOX_TOKEN,
   showMarkers: false,
   markerColor: "#3FB1CE",
@@ -110,6 +110,26 @@ var config = {
         zoom: 17,
         pitch: 0,
         bearing: 0,
+      },
+      mapAnimation: "flyTo",
+      rotateAnimation: false,
+      callback: "",
+      onChapterEnter: [],
+      onChapterExit: [],
+    },
+    {
+      id: "fifth-chapter",
+      alignment: "right",
+      hidden: false,
+      title: "Camp Mystic",
+      image: "./images/water-mark.png",
+      description:
+        "Pre-flooding, Camp Mystic was a harmonious retreat for the Christian youth of Central Texas. It hosted over a dozen cabins, tennis courts, a dining hall and a handful of communal spaces. The camp was celebrating its 99th year of opening at the time of the flooding.",
+      location: {
+        center: [-99.369266, 30.009313],
+        zoom: 17,
+        pitch: 60,
+        bearing: 50,
       },
       mapAnimation: "flyTo",
       rotateAnimation: false,

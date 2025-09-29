@@ -324,21 +324,21 @@
         }
 
         // Add our own layers
-        map.addSource("guadalupe-river", {
-          type: "geojson",
-          data: "./data/river.geojson",
-        });
+        // map.addSource("guadalupe-river", {
+        //   type: "geojson",
+        //   data: "./data/river.geojson",
+        // });
 
-        map.addLayer({
-          id: "river-line",
-          type: "line",
-          source: "guadalupe-river",
-          paint: {
-            "line-color": "#0096FF",
-            "line-width": 6,
-            "line-opacity": 0, // start hidden; we'll fade it in via onChapterEnter
-          },
-        });
+        // map.addLayer({
+        //   id: "river-line",
+        //   type: "line",
+        //   source: "guadalupe-river",
+        //   paint: {
+        //     "line-color": "#0096FF",
+        //     "line-width": 6,
+        //     "line-opacity": 0, // start hidden; we'll fade it in via onChapterEnter
+        //   },
+        // });
 
         // setup the instance, pass callback functions
         scroller
@@ -402,17 +402,6 @@
             .querySelectorAll('[data-scrollama-index="0"]')[0]
             .scrollIntoView();
         }
-      });
-    </script>
-    <script>
-      map.on("load", function () {
-        // … your addSource / addLayer calls …
-
-        // Debug: verify GeoJSON really loads
-        fetch("./data/river.geojson")
-          .then((r) => r.json())
-          .then((g) => console.log("river features:", g.features?.length))
-          .catch((e) => console.error("Error loading GeoJSON:", e));
       });
     </script>
   </body>
