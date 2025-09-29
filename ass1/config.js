@@ -195,7 +195,7 @@ var config = {
         bearing: 50,
       },
       mapAnimation: "flyTo",
-      rotateAnimation: false,
+      rotateAnimation: true,
       callback: "",
       onChapterEnter: [
         { layer: "watermarkcampmysticnewdata", visibility: "none" },
@@ -204,6 +204,7 @@ var config = {
           visibility: "none",
         },
         { rain: { density: 0.5 } },
+        { layer: "map1-8xzsu1", visibility: "visible", opacity: 0.8 },
       ],
       onChapterExit: [],
     },
@@ -224,7 +225,10 @@ var config = {
       mapAnimation: "flyTo",
       rotateAnimation: true,
       callback: "",
-      onChapterEnter: [{ rain: { density: 0 } }],
+      onChapterEnter: [
+        { rain: { density: 0 } },
+        { layer: "map1-8xzsu1", visibility: "visible", opacity: 0.8 },
+      ],
       onChapterExit: [],
     },
   ],
