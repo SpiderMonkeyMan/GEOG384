@@ -1,5 +1,5 @@
 var config = {
-  style: "mapbox://styles/jgray456/cmg584t1q009u01qtc7e338cb/",
+  style: "mapbox://styles/jgray456/cmg584t1q009u01qtc7e338cb",
   accessToken: window.MAPBOX_TOKEN,
   showMarkers: false,
   markerColor: "#3FB1CE",
@@ -84,17 +84,12 @@ var config = {
       rotateAnimation: false,
       callback: "",
       onChapterEnter: [
-        {
-          layer: "river-line",
-          opacity: 1,
-          duration: 1000,
-        },
+        { layer: "clip-river-featurestojson-2cr27u", visibility: "visible" },
+        { layer: "map1-8xzsu1", visibility: "visible" },
       ],
       onChapterExit: [
-        {
-          layer: "river-line",
-          opacity: 0,
-        },
+        { layer: "clip-river-featurestojson-2cr27u", visibility: "none" },
+        { layer: "map1-8xzsu1", visibility: "none" },
       ],
     },
     {
@@ -114,17 +109,19 @@ var config = {
       mapAnimation: "flyTo",
       rotateAnimation: false,
       callback: "",
-      onChapterEnter: [],
-      onChapterExit: [],
+      onChapterEnter: [
+        { layer: "map1-8xzsu1", visibility: "visible", opacity: 0.8 },
+      ],
+      onChapterExit: [{ layer: "map1-8xzsu1", visibility: "none" }],
     },
     {
       id: "fifth-chapter",
       alignment: "right",
       hidden: false,
-      title: "Water Marks",
-      image: "./images/water-mark.jpg",
+      title: "Flood Zone",
+      // image: "./images/water-mark.jpg",
       description:
-        "Pre-flooding, Camp Mystic was a harmonious retreat for the Christian youth of Central Texas. It hosted over a dozen cabins, tennis courts, a dining hall and a handful of communal spaces. The camp was celebrating its 99th year of opening at the time of the flooding.",
+        "These FEMA (Federal Emergency Management Agency) flood zones indicate a one percent risk of a flood per year or, in other words, an 100 year flood zone. A handful Camp Mystic’s buildings are seen within the dangerous flood zone - and the entire camp is built upon the Guadalupe’s floodplain. To make matter worse, in 2013 Camp Mystic requested that many of their buildings be taken off the high risk flood zones. FEMA granted their request, therefore saving the camp money from expensive flood insurance but also putting the young campers at greater.",
       location: {
         center: [-99.369266, 30.009313],
         zoom: 16.5,
@@ -134,7 +131,45 @@ var config = {
       mapAnimation: "flyTo",
       rotateAnimation: false,
       callback: "",
-      onChapterEnter: [],
+      onChapterEnter: [
+        { layer: "map1-8xzsu1", visibility: "visible", opacity: 0.8 },
+        {
+          layer: "s-fld-haz-arse-featurestojso-b765rn",
+          visibility: "visible",
+          opacity: 0.6,
+        },
+      ],
+      onChapterExit: [
+        { layer: "s-fld-haz-arse-featurestojso-b765rn", visibility: "none" },
+        { layer: "watermarkcampmysticnewdata", visibility: "none" },
+      ],
+    },
+    {
+      id: "sixth-chapter",
+      alignment: "left",
+      hidden: false,
+      title: "High-Water Makrs",
+      image: "./images/water-mark.jpg",
+      description:
+        "Also displayed are High-Water Marks set by the US Geological Survey. These are “real-time water-monitoring sites throughout the Nation that record continuous stream stage (height of a river)” and they are “invaluable during floods and high water to allow the public and emergency responders to know where dangerous flooding might be occurring.” The numbers shown indicate the height-above ground in which the flood waters reached.",
+      location: {
+        center: [-99.369266, 30.009313],
+        zoom: 16.5,
+        pitch: 60,
+        bearing: 50,
+      },
+      mapAnimation: "flyTo",
+      rotateAnimation: false,
+      callback: "",
+      onChapterEnter: [
+        { layer: "watermarkcampmysticnewdata", visibility: "visible" },
+        { layer: "map1-8xzsu1", visibility: "visible", opacity: 0.8 },
+        {
+          layer: "s-fld-haz-arse-featurestojso-b765rn",
+          visibility: "visible",
+          opacity: 0.6,
+        },
+      ],
       onChapterExit: [],
     },
   ],

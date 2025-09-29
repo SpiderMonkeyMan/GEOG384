@@ -194,6 +194,16 @@
 
       var header = document.createElement("div");
 
+      function setLayerVisibility(action) {
+        const id = action.layer;
+        const layer = map.getLayer(id);
+        if (!layer) {
+          console.warn("Layer not found:", id);
+          return;
+        }
+        map.setLayoutProperty(id, "visibility", action.visibility);
+      }
+
       if (config.title) {
         var titleText = document.createElement("h1");
         titleText.innerText = config.title;
@@ -323,22 +333,27 @@
           });
         }
 
-        // Add our own layers
-        // map.addSource("guadalupe-river", {
-        //   type: "geojson",
-        //   data: "./data/river.geojson",
-        // });
+        // (check stuff)
+        console.log(map.getStyle().layers.map((l) => l.id));
+        map.setLayoutProperty(
+          "s-fld-haz-arse-featurestojso-b765rn",
+          "visibility",
+          "none"
+        );
+        map.setLayoutProperty(
+          "clip-river-featurestojson-2cr27u",
+          "visibility",
+          "none"
+        );
+        map.setLayoutProperty("map1-8xzsu1", "visibility", "none");
+        map.setLayoutProperty(
+          "watermarkcampmysticnewdata",
+          "visibility",
+          "none"
+        );
 
-        // map.addLayer({
-        //   id: "river-line",
-        //   type: "line",
-        //   source: "guadalupe-river",
-        //   paint: {
-        //     "line-color": "#0096FF",
-        //     "line-width": 6,
-        //     "line-opacity": 0, // start hidden; we'll fade it in via onChapterEnter
-        //   },
-        // });
+        // optional: log any mapbox errors
+        map.on("error", (e) => console.error("Mapbox error:", e?.error || e));
 
         // setup the instance, pass callback functions
         scroller
@@ -361,6 +376,7 @@
             }
             if (chapter.onChapterEnter.length > 0) {
               chapter.onChapterEnter.forEach(setLayerOpacity);
+              chapter.onChapterEnter.forEach(setLayerVisibility);
             }
             if (chapter.callback) {
               window[chapter.callback]();
@@ -394,6 +410,7 @@
             response.element.classList.remove("active");
             if (chapter.onChapterExit.length > 0) {
               chapter.onChapterExit.forEach(setLayerOpacity);
+              chapter.onChapterExit.forEach(setLayerVisibility);
             }
           });
 
