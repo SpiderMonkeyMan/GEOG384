@@ -195,7 +195,7 @@ var config = {
         bearing: 50,
       },
       mapAnimation: "flyTo",
-      rotateAnimation: true,
+      rotateAnimation: false,
       callback: "",
       onChapterEnter: [
         { layer: "watermarkcampmysticnewdata", visibility: "none" },
