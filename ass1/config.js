@@ -85,11 +85,9 @@ var config = {
       callback: "",
       onChapterEnter: [
         { layer: "clip-river-featurestojson-2cr27u", visibility: "visible" },
-        { layer: "map1-8xzsu1", visibility: "visible" },
       ],
       onChapterExit: [
         { layer: "clip-river-featurestojson-2cr27u", visibility: "none" },
-        { layer: "map1-8xzsu1", visibility: "none" },
       ],
     },
     {
@@ -170,6 +168,51 @@ var config = {
           opacity: 0.6,
         },
       ],
+      onChapterExit: [],
+    },
+    {
+      id: "seventh-chapter",
+      alignment: "right",
+      hidden: false,
+      title: "Aftermath",
+      image: "./images/muddy_cabin.jpg",
+      description: "",
+      location: {
+        center: [-99.369266, 30.009313],
+        zoom: 16.5,
+        pitch: 60,
+        bearing: 50,
+      },
+      mapAnimation: "flyTo",
+      rotateAnimation: true,
+      callback: "",
+      onChapterEnter: [
+        { layer: "watermarkcampmysticnewdata", visibility: "none" },
+        {
+          layer: "s-fld-haz-arse-featurestojso-b765rn",
+          visibility: "none",
+        },
+      ],
+      onChapterExit: [],
+    },
+    {
+      id: "eighth-chapter",
+      alignment: "fully",
+      hidden: false,
+      title: "Today",
+      // image: "./images/muddy_cabin.jpg",
+      description:
+        "Currently, Camp Mystic is trying to re-open for it’s 100th season. The parents of the deceased campers strongly object to the re-opening: In a quote from the New York Times, Cici Steward, the mother of flooding victim, Cile Steward, states, “For my family, these months have felt like an eternity. For the camp, it seems like nothing more than a brief pause before business as usual… Camp Mystic is pressing ahead with reopening, even if it means inviting girls to swim in the same river that may potentially still hold my daughter’s body.”\n\nIn response to the tragedy at Camp Mystic, Texas governor Greg Abbot signed the Camp Safety bill into law. This law imposes greater regulations on youth camps in Texas.",
+      location: {
+        center: [-99.369266, 30.009313],
+        zoom: 16.5,
+        pitch: 60,
+        bearing: 50,
+      },
+      mapAnimation: "flyTo",
+      rotateAnimation: true,
+      callback: "",
+      onChapterEnter: [],
       onChapterExit: [],
     },
   ],

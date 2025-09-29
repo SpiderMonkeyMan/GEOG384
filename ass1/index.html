@@ -188,12 +188,6 @@
         });
       }
 
-      var story = document.getElementById("story");
-      var features = document.createElement("div");
-      features.setAttribute("id", "features");
-
-      var header = document.createElement("div");
-
       function setLayerVisibility(action) {
         const id = action.layer;
         const layer = map.getLayer(id);
@@ -203,6 +197,12 @@
         }
         map.setLayoutProperty(id, "visibility", action.visibility);
       }
+
+      var story = document.getElementById("story");
+      var features = document.createElement("div");
+      features.setAttribute("id", "features");
+
+      var header = document.createElement("div");
 
       if (config.title) {
         var titleText = document.createElement("h1");
