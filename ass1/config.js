@@ -107,7 +107,7 @@ var config = {
         "Pre-flooding, Camp Mystic was a harmonious retreat for the Christian youth of Central Texas. It hosted over a dozen cabins, tennis courts, a dining hall and a handful of communal spaces. The camp was celebrating its 99th year of opening at the time of the flooding.",
       location: {
         center: [-99.369266, 30.009313],
-        zoom: 17,
+        zoom: 16.5,
         pitch: 0,
         bearing: 0,
       },
@@ -121,13 +121,13 @@ var config = {
       id: "fifth-chapter",
       alignment: "right",
       hidden: false,
-      title: "Camp Mystic",
-      image: "./images/water-mark.png",
+      title: "Water Marks",
+      image: "./images/water-mark.jpg",
       description:
         "Pre-flooding, Camp Mystic was a harmonious retreat for the Christian youth of Central Texas. It hosted over a dozen cabins, tennis courts, a dining hall and a handful of communal spaces. The camp was celebrating its 99th year of opening at the time of the flooding.",
       location: {
         center: [-99.369266, 30.009313],
-        zoom: 17,
+        zoom: 16.5,
         pitch: 60,
         bearing: 50,
       },
