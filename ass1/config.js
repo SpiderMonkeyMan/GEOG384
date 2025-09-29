@@ -1,7 +1,7 @@
 var config = {
   style: "mapbox://styles/mapbox/streets-v12",
   accessToken: window.MAPBOX_TOKEN,
-  showMarkers: true,
+  showMarkers: false,
   markerColor: "#3FB1CE",
   //projection: 'equirectangular',
   //Read more about available projections here
@@ -37,19 +37,8 @@ var config = {
       mapAnimation: "flyTo",
       rotateAnimation: false,
       callback: "",
-      onChapterEnter: [
-        // {
-        //     layer: 'layer-name',
-        //     opacity: 1,
-        //     duration: 5000
-        // }
-      ],
-      onChapterExit: [
-        // {
-        //     layer: 'layer-name',
-        //     opacity: 0
-        // }
-      ],
+      onChapterEnter: [],
+      onChapterExit: [],
     },
     {
       id: "second-identifier",
@@ -82,23 +71,34 @@ var config = {
       alignment: "left",
       hidden: false,
       title: "Third Title",
-      image: "images/pumpkin.jpg",
+      //   image: "images/pumpkin.jpg",
       description: "Copy these sections to add to your story.",
       location: {
-        center: [6.15116, 46.20595],
-        zoom: 12.52,
+        center: [-99.3280556, 30.0005556],
+        zoom: 11,
         pitch: 8.01,
         bearing: 0.0,
       },
       mapAnimation: "flyTo",
       rotateAnimation: false,
       callback: "",
-      onChapterEnter: [],
-      onChapterExit: [],
+      onChapterEnter: [
+        {
+          layer: "river-line",
+          opacity: 1,
+          duration: 1000,
+        },
+      ],
+      onChapterExit: [
+        {
+          layer: "river-line",
+          opacity: 0,
+        },
+      ],
     },
     {
       id: "fourth-chapter",
-      alignment: "fully",
+      alignment: "right",
       hidden: false,
       title: "Fo Title",
       image: "./path/to/image/source.png",

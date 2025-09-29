@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Mapbox Storytelling</title>
+    <title>Camp Mystic Controversy</title>
     <meta
       name="viewport"
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
@@ -323,6 +323,23 @@
           });
         }
 
+        // Add our own layers
+        map.addSource("guadalupe-river", {
+          type: "geojson",
+          data: "./data/river.geojson",
+        });
+
+        map.addLayer({
+          id: "river-line",
+          type: "line",
+          source: "guadalupe-river",
+          paint: {
+            "line-color": "#000000",
+            "line-width": 3,
+            "line-opacity": 0, // start hidden; we'll fade it in via onChapterEnter
+          },
+        });
+
         // setup the instance, pass callback functions
         scroller
           .setup({
@@ -385,6 +402,17 @@
             .querySelectorAll('[data-scrollama-index="0"]')[0]
             .scrollIntoView();
         }
+      });
+    </script>
+    <script>
+      map.on("load", function () {
+        // … your addSource / addLayer calls …
+
+        // Debug: verify GeoJSON really loads
+        fetch("./data/river.geojson")
+          .then((r) => r.json())
+          .then((g) => console.log("river features:", g.features?.length))
+          .catch((e) => console.error("Error loading GeoJSON:", e));
       });
     </script>
   </body>
