@@ -47,7 +47,7 @@ var config = {
       title: "Centerpoint, TX",
       //   image: "images/globe.png",
       description:
-        '<div class="video-wrapper"><iframe width="360" height="203" src="https://www.youtube.com/embed/HqXXbjN-hhs?start=2100&amp;end=2265" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p class="caption" style="text-align:center;">Here is a bridge over the Guadalupe River in Center Point, Texas on July 4th. This video demonstrates the immense destructive nature of the flooding. As you can see, the water carries an entire house along the river bank.</p>',
+        '<div style="text-align: center;"><iframe width="360" height="203"src="https://www.youtube.com/embed/HqXXbjN-hhs?start=2100&amp;end=2265"frameborder="0"allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"allowfullscreenstyle="display:inline-block;"></iframe></div><p class="caption" style="text-align:center;">Here is a bridge over the Guadalupe River in Center Point, Texas on July 4th. This video demonstrates the immense destructive nature of the flooding. As you can see, the water carries an entire house along the river bank.</p>',
       location: {
         center: [-99.03769, 29.946594],
         zoom: 17,
@@ -66,7 +66,7 @@ var config = {
       onChapterEnter: [
         { rain: { density: 0.5 } },
         {
-          marker: { add: true, coords: [-99.03769, 29.946594], color: "black" },
+          marker: { add: true, coords: [-99.03769, 29.946594], color: "red" },
         },
       ],
       onChapterExit: [
@@ -154,7 +154,7 @@ var config = {
     },
     {
       id: "sixth-chapter",
-      alignment: "left",
+      alignment: "right",
       hidden: false,
       title: "High-Water Makrs",
       image: "./images/water-mark.jpg",
@@ -183,11 +183,12 @@ var config = {
     },
     {
       id: "seventh-chapter",
-      alignment: "right",
+      alignment: "left",
       hidden: false,
       title: "Aftermath",
       image: "./images/muddy_cabin.jpg",
-      description: "",
+      description:
+        "Horrifying scenes after first responders arrive at the camp show the cabins in total disrepair, destroyed by the muddy waters of the Guadalupe.",
       location: {
         center: [-99.369266, 30.009313],
         zoom: 16.5,
@@ -195,7 +196,7 @@ var config = {
         bearing: 50,
       },
       mapAnimation: "flyTo",
-      rotateAnimation: true,
+      rotateAnimation: false,
       callback: "",
       onChapterEnter: [
         { layer: "watermarkcampmysticnewdata", visibility: "none" },
@@ -215,7 +216,7 @@ var config = {
       title: "Today",
       // image: "./images/muddy_cabin.jpg",
       description:
-        "Currently, Camp Mystic is trying to re-open for it’s 100th season. The parents of the deceased campers strongly object to the re-opening: In a quote from the New York Times, Cici Steward, the mother of flooding victim, Cile Steward, states, “For my family, these months have felt like an eternity. For the camp, it seems like nothing more than a brief pause before business as usual… Camp Mystic is pressing ahead with reopening, even if it means inviting girls to swim in the same river that may potentially still hold my daughter’s body.”\n\nIn response to the tragedy at Camp Mystic, Texas governor Greg Abbot signed the Camp Safety bill into law. This law imposes greater regulations on youth camps in Texas.",
+        "<p>Currently, Camp Mystic is trying to re-open for it’s 100th season. The parents of the deceased campers strongly object to the re-opening: In a quote from the New York Times, Cici Steward, the mother of flooding victim, Cile Steward, states, “For my family, these months have felt like an eternity. For the camp, it seems like nothing more than a brief pause before business as usual… Camp Mystic is pressing ahead with reopening, even if it means inviting girls to swim in the same river that may potentially still hold my daughter’s body.”\n\nIn response to the tragedy at Camp Mystic, Texas governor Greg Abbot signed the Camp Safety bill into law. This law imposes greater regulations on youth camps in Texas. To read more on this follow <a href='https://abcnews.go.com/US/parents-girl-missing-camp-mystic-flooding-calls-reopening/story?id=125936638'>this link</a>.</p>",
       location: {
         center: [-99.369266, 30.009313],
         zoom: 16.5,
