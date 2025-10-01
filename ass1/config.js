@@ -47,6 +47,7 @@ var config = {
       title: "Centerpoint, TX",
       //   image: "images/globe.png",
       description:
+        // imbedding a youtube video
         '<div style="text-align: center;"><iframe width="360" height="203"src="https://www.youtube.com/embed/HqXXbjN-hhs?start=2100&amp;end=2265"frameborder="0"allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"allowfullscreenstyle="display:inline-block;"></iframe></div><p class="caption" style="text-align:center;">Here is a bridge over the Guadalupe River in Center Point, Texas on July 4th. This video demonstrates the immense destructive nature of the flooding. As you can see, the water carries an entire house along the river bank.</p>',
       location: {
         center: [-99.03769, 29.946594],
@@ -64,12 +65,15 @@ var config = {
       rotateAnimation: false,
       callback: "",
       onChapterEnter: [
+        // adding rain
         { rain: { density: 0.5 } },
+        // adding marker
         {
           marker: { add: true, coords: [-99.03769, 29.946594], color: "red" },
         },
       ],
       onChapterExit: [
+        // remove rain and marker
         { rain: { density: 0 } },
         { marker: { remove: true, coords: [-99.03769, 29.946594] } },
       ],
@@ -190,10 +194,10 @@ var config = {
       description:
         "Horrifying scenes after first responders arrive at the camp show the cabins in total disrepair, destroyed by the muddy waters of the Guadalupe.",
       location: {
-        center: [-99.369266, 30.009313],
-        zoom: 16.5,
+        center: [-99.368266, 30.009313],
+        zoom: 17.5,
         pitch: 60,
-        bearing: 50,
+        bearing: 120,
       },
       mapAnimation: "flyTo",
       rotateAnimation: false,

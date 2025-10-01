@@ -187,17 +187,18 @@
           map.setPaintProperty(layer.layer, prop, layer.opacity, options);
         });
       }
-
+      // This function helps toggle visibility of layers
       function setLayerVisibility(action) {
         const id = action.layer;
         const layer = map.getLayer(id);
+        // Error handling
         if (!layer) {
           console.warn("Layer not found:", id);
           return;
         }
         map.setLayoutProperty(id, "visibility", action.visibility);
       }
-
+      // Rain toggling with defaults
       function setRain(action) {
         const defaults = {
           density: 0.0,
