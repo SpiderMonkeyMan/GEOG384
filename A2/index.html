@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mont Tremblant Restaurants</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fonts & Mapbox -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
+    <script src="../mapbox-token.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ---------- Page Layout ---------- */
+      body {
+        margin: 0;
+        font-family: "Open Sans", sans-serif;
+        background-color: #f7f9fc;
+        color: #222;
+      }
+
+      header {
+        text-align: center;
+        padding: 2rem 1rem;
+        background: linear-gradient(135deg, #e0ecff, #c9d8f0);
+        border-bottom: 3px solid #99b9e9;
+      }
+
+      header h1 {
+        margin: 0;
+        font-family: "Ice and Snow", "Open Sans", cursive;
+        font-size: 3.5em;
+        color: #002b5c;
+        text-shadow: 1px 2px 5px rgba(255, 255, 255, 0.5);
+      }
+
+      main {
+        max-width: 1800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      /* ---------- Map Container ---------- */
+      #map-container {
+        position: relative; /* allows button to float over map */
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        border: 3px solid #a4bade;
+        overflow: hidden;
+        padding: 10px;
+      }
+
+      #map {
+        width: 100%;
+        height: 700px;
+        border-radius: 10px;
+      }
+
+      /* ---------- Random Button ---------- */
+      #random-btn {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        background-color: #002b5c;
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.2s, transform 0.1s;
+        z-index: 2; /* ensures button stays above map */
+      }
+
+      #random-btn:hover {
+        background-color: #004a9b;
+        transform: scale(1.08);
+      }
+
+      /* ---------- Popup Styling ---------- */
+      .mapboxgl-popup {
+        max-width: 220px;
+      }
+
+      .mapboxgl-popup-content {
+        text-align: center;
+        color: #000;
+        font-size: 1em;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        letter-spacing: 1px;
+        border-radius: 15px;
+        background-color: #a4bade;
+        border: 2px solid #d5e4ff;
+        box-shadow: 0 0 15px rgba(180, 210, 255, 0.8);
+      }
+
+      /* ---------- Marker Style ---------- */
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(203, 239, 0, 0.6);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(184, 107, 6, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(184, 7, 7, 0);
+        }
+      }
+
+      .marker {
+        background-image: url("images/ski.png");
+        background-size: contain;
+        width: 30px;
+        height: 30px;
+        animation: pulse 2s infinite;
+        border-radius: 80%;
+        background-color: white;
+        border: 2px solid #000;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+      }
+
+      /* ---------- Custom Font ---------- */
+      @font-face {
+        font-family: "Ice and Snow";
+        src: url("fonts/IceAndSnow.ttf") format("truetype");
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>MONT-TREMBLANT RESTAURANTS</h1>
+      <p>Explore top-rated local spots with our interactive map</p>
+    </header>
+
+    <main>
+      <section id="map-container">
+        <div id="map"></div>
+
+        <!-- Floating random-restaurant button -->
+        <button id="random-btn">🎲 Random Restaurant</button>
+      </section>
+    </main>
+
+    <script>
+      // Initialize map
+      mapboxgl.accessToken = window.MAPBOX_TOKEN;
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/jarkpartnam/cmh26sfd2007201s07v6z70y0",
+        center: [-74.5949977, 46.1523861],
+        zoom: 11.2,
+      });
+
+      const markers = [];
+
+      map.on("load", async () => {
+        // Load restaurant GeoJSON data
+        const response = await fetch("feature.geojson");
+        const geojson = await response.json();
+
+        map.addSource("tremblant", {
+          type: "geojson",
+          data: "feature.geojson",
+        });
+
+        // Create markers + popups
+        for (const feature of geojson.features) {
+          const el = document.createElement("div");
+          el.className = "marker";
+
+          const popupHTML = `
+            <div style="max-width: 220px; font-family: 'Open Sans', sans-serif;">
+              <h1 style="
+                margin: 0 0 5px 0;
+                font-size: 2em;
+                font-family: 'Ice and Snow', 'Open Sans', cursive;
+                color: #000000;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+                letter-spacing: 1px;
+              ">
+                ${feature.properties.Title}
+              </h1>
+              <img
+                src="${feature.properties["Images URL"]}"
+                alt="${feature.properties.Title}"
+                style="width:100%; border-radius:8px; margin-bottom:5px;"
+              >
+              <p><strong>Rating:</strong> ${feature.properties.Ratings} ⭐</p>
+              <p><strong>Price:</strong> ${feature.properties.Prices} (${feature.properties["Price Changes"]})</p>
+              <p><strong>Hours:</strong> ${feature.properties.Hours}</p>
+              <p><strong>Address:</strong><br>${feature.properties.Addresses}</p>
+              <a href="${feature.properties.URL}" target="_blank" style="color:#0078a8; text-decoration:none; font-weight:bold;">
+                View on Restomontreal
+              </a>
+            </div>
+          `;
+
+          const marker = new mapboxgl.Marker(el)
+            .setLngLat(feature.geometry.coordinates)
+            .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupHTML))
+            .addTo(map);
+
+          markers.push({ marker, coords: feature.geometry.coordinates });
+        }
+
+        // Random Restaurant Button
+        let lastMarker = null;
+
+        document.getElementById("random-btn").addEventListener("click", () => {
+          if (!markers.length) return;
+
+          // Pick a random marker (avoid repeating last one)
+          let idx = Math.floor(Math.random() * markers.length);
+          if (lastMarker && markers.length > 1) {
+            let tries = 0;
+            while (markers[idx].marker === lastMarker && tries < 10) {
+              idx = Math.floor(Math.random() * markers.length);
+              tries++;
+            }
+          }
+
+          const { marker, coords } = markers[idx];
+
+          // Close previously opened popup
+          if (lastMarker && lastMarker.getPopup()) {
+            lastMarker.getPopup().remove();
+          }
+
+          // Fly to new restaurant and open popup
+          map.flyTo({ center: coords, zoom: 14, essential: true });
+          marker.getPopup().addTo(map);
+
+          lastMarker = marker;
+        });
+      });
+    </script>
+  </body>
+</html>
