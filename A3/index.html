@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mapbox Geolocation Tracker (30s Poll + History + Dots)</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="../mapbox-token.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.js"></script>
+    <style>
+      :root {
+        /* adjust this if you change the bar's height/padding */
+        --header-h: 48px;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font: 12px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+
+      /* NEW: top divider bar */
+      #topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-h);
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      #topbar .bar-text {
+        font-weight: 600;
+        opacity: 0.85;
+      }
+
+      /* push the map below the divider */
+      #map {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: var(--header-h);
+        bottom: 0;
+      }
+
+      /* also push the HUD down a bit so it clears the divider */
+      #hud {
+        position: absolute;
+        top: calc(var(--header-h) + 10px);
+        left: 10px;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        padding: 8px 10px;
+        border-radius: 8px;
+        min-width: 220px;
+        max-width: 320px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .section-title {
+        margin-top: 8px;
+        font-weight: 700;
+      }
+      #history {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0 0;
+        max-height: 40vh;
+        overflow: auto;
+      }
+      #history li {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 4px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        white-space: nowrap;
+      }
+      #history li:first-child {
+        border-top: none;
+      }
+      #history .time {
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NEW: divider above the map -->
+    <div id="topbar">
+      <div class="bar-text">
+        <p id="button">
+          <input type="text" placeholder="type in user ID" id="user" />
+          <button type="button" onclick="userid()">submit</button>
+        </p>
+      </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="hud">
+      <div class="row">
+        <div><strong>Pings</strong></div>
+        <div id="pingCount">0</div>
+      </div>
+      <div class="row">
+        <div><strong>Last ping</strong></div>
+        <div id="lastTime">—</div>
+      </div>
+      <div class="row">
+        <div><strong>Lng,Lat</strong></div>
+        <div id="coords" class="mono">—</div>
+      </div>
+
+      <div class="section-title">History</div>
+      <ul id="history"></ul>
+    </div>
+
+    <script>
+      mapboxgl.accessToken = window.MAPBOX_TOKEN;
+
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: [0, 0],
+        zoom: 2,
+      });
+
+      const elPing = document.getElementById("pingCount");
+      const elTime = document.getElementById("lastTime");
+      const elCoords = document.getElementById("coords");
+      const elHistory = document.getElementById("history");
+
+      const PING_INTERVAL_MS = 30000; // 30 seconds
+      const HISTORY_LIMIT = 100; // keep the last 100 entries
+
+      let hasCentered = false;
+      let pingCount = 0;
+      let inFlight = false;
+
+      let userId;
+
+      let pingTimerId = null; // holds setInterval handle when tracking is ON
+
+      function setControlsRunning(isRunning) {
+        const start = document.getElementById("startBtn");
+        const stop = document.getElementById("stopBtn");
+        const status = document.getElementById("status");
+
+        if (start) start.disabled = isRunning;
+        if (stop) stop.disabled = !isRunning;
+        if (status)
+          status.textContent = isRunning ? "Tracking ON" : "Tracking OFF";
+      }
+
+      // GeoJSON storage for pings (dots)
+      const points = [];
+      const pingFC = { type: "FeatureCollection", features: points };
+      let sourceAdded = false;
+
+      const geoOpts = {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0,
+      };
+
+      function addSourceAndLayers() {
+        if (sourceAdded) return;
+        map.addSource("pings", { type: "geojson", data: pingFC });
+
+        map.addLayer({
+          id: "pings-past",
+          type: "circle",
+          source: "pings",
+          filter: ["==", ["get", "isLatest"], false],
+          paint: {
+            "circle-radius": 5,
+            "circle-color": "#3b82f6",
+            "circle-stroke-color": "#ffffff",
+            "circle-stroke-width": 1,
+            "circle-opacity": 0.9,
+          },
+        });
+
+        map.addLayer({
+          id: "pings-latest",
+          type: "circle",
+          source: "pings",
+          filter: ["==", ["get", "isLatest"], true],
+          paint: {
+            "circle-radius": 7,
+            "circle-color": "#ef4444",
+            "circle-stroke-color": "#ffffff",
+            "circle-stroke-width": 1.25,
+            "circle-opacity": 0.95,
+          },
+        });
+
+        sourceAdded = true;
+      }
+
+      map.on("load", () => {
+        addSourceAndLayers();
+        if (sourceAdded) map.getSource("pings").setData(pingFC);
+      });
+
+      function refreshGeo() {
+        if (sourceAdded) {
+          map.getSource("pings").setData(pingFC);
+        }
+      }
+
+      function addHistoryEntry(user, lng, lat, when) {
+        const li = document.createElement("li");
+        const timeSpan = document.createElement("span");
+        timeSpan.className = "time";
+        timeSpan.textContent = when.toLocaleTimeString();
+
+        const coordSpan = document.createElement("span");
+        coordSpan.className = "mono";
+        coordSpan.textContent = `${lng.toFixed(5)}, ${lat.toFixed(5)}`;
+
+        li.appendChild(timeSpan);
+        li.appendChild(coordSpan);
+        elHistory.prepend(li);
+
+        writeToCSV(when, user, lat, lng);
+
+        while (elHistory.children.length > HISTORY_LIMIT) {
+          elHistory.removeChild(elHistory.lastChild);
+        }
+      }
+
+      function updateUI(position) {
+        const { longitude: lng, latitude: lat } = position.coords;
+        const now = new Date();
+
+        if (!hasCentered) {
+          map.jumpTo({ center: [lng, lat], zoom: 17 });
+          hasCentered = true;
+        } else {
+          map.setCenter([lng, lat]);
+        }
+
+        pingCount += 1;
+        elPing.textContent = pingCount;
+        elTime.textContent = now.toLocaleTimeString();
+        elCoords.textContent = `${lng.toFixed(5)}, ${lat.toFixed(5)}`;
+
+        if (points.length > 0) {
+          points[points.length - 1].properties.isLatest = false;
+        }
+
+        points.push({
+          type: "Feature",
+          properties: { isLatest: true, time: now.toISOString() },
+          geometry: { type: "Point", coordinates: [lng, lat] },
+        });
+
+        if (points.length > HISTORY_LIMIT) points.shift();
+
+        refreshGeo();
+        addHistoryEntry(userId, lng, lat, now);
+      }
+
+      function doPing() {
+        if (inFlight) return;
+        inFlight = true;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            updateUI(pos);
+            inFlight = false;
+          },
+          (err) => {
+            console.warn(`Geolocation error (${err.code}): ${err.message}`);
+            inFlight = false;
+          },
+          geoOpts
+        );
+      }
+
+      function userid() {
+        userId = document.getElementById("user")?.value.trim() ?? "";
+        const users = ["jonah", "jack", "sam", "instructor"];
+        if (users.includes(userId)) {
+          document.getElementById("button").innerHTML =
+            "<button id='startBtn' type='button' onclick='startPing()'>Start tracking</button> \
+            <button id='stopBtn'  type='button' onclick='stopPing()' disabled>Stop tracking</button> \
+            <span id='status' style='margin-left:8px; opacity:.75;'>Tracking OFF</span>";
+        } else {
+          alert("Invalid user ID");
+        }
+      }
+
+      function startPing() {
+        if (pingTimerId) return; // already running
+        doPing(); // do an immediate ping
+        pingTimerId = setInterval(doPing, PING_INTERVAL_MS);
+        setControlsRunning(true);
+      }
+
+      function stopPing() {
+        if (pingTimerId) {
+          clearInterval(pingTimerId); // stop future pings
+          pingTimerId = null;
+        }
+        setControlsRunning(false);
+      }
+
+      function writeToCSV(timestamp_in, userID_in, lat_in, lng_in) {
+        var user = {
+          timestamp_in: encodeURIComponent(timestamp_in),
+          userID_in: encodeURIComponent(userID_in),
+          lat_in: encodeURIComponent(lat_in),
+          lng_in: encodeURIComponent(lng_in),
+        };
+        console.log(user);
+        if (window.XMLHttpRequest) {
+          xmlhttp = new XMLHttpRequest();
+        } else {
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        var url =
+          "?timestamp=" +
+          user.timestamp_in +
+          "&userID=" +
+          user.userID_in +
+          "&lat=" +
+          user.lat_in +
+          "&lng=" +
+          user.lng_in;
+        console.log(url);
+        var sendUrl = "writetojson.php" + url;
+        xmlhttp.open("GET", sendUrl, false);
+        xmlhttp.send();
+      }
+    </script>
+  </body>
+</html>
