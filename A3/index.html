@@ -140,8 +140,28 @@
       const map = new mapboxgl.Map({
         container: "map",
         style: "mapbox://styles/mapbox/streets-v12",
-        center: [0, 0],
-        zoom: 2,
+        center: [-73.61973, 45.51263],
+        zoom: 9.37,
+      });
+
+      map.on("load", () => {
+        map.addSource("librariesMTL", {
+          type: "geojson",
+          // Use a URL for the value for the `data` property.
+          data: "https://neogeoweb.ca/group1/A3/librariesMTL.geojson",
+        });
+
+        map.addLayer({
+          id: "libraries-layer",
+          type: "circle",
+          source: "librariesMTL",
+          paint: {
+            "circle-radius": 4,
+            "circle-stroke-width": 2,
+            "circle-color": "red",
+            "circle-stroke-color": "white",
+          },
+        });
       });
 
       const elPing = document.getElementById("pingCount");
@@ -286,6 +306,12 @@
         inFlight = true;
         navigator.geolocation.getCurrentPosition(
           (pos) => {
+            console.log(
+              distanceToClosestLibrary(
+                pos.coords.longitude,
+                pos.coords.latitude
+              )
+            );
             updateUI(pos);
             inFlight = false;
           },
@@ -332,7 +358,6 @@
           lat_in: encodeURIComponent(lat_in),
           lng_in: encodeURIComponent(lng_in),
         };
-        console.log(user);
         if (window.XMLHttpRequest) {
           xmlhttp = new XMLHttpRequest();
         } else {
@@ -347,10 +372,91 @@
           user.lat_in +
           "&lng=" +
           user.lng_in;
-        console.log(url);
         var sendUrl = "writetojson.php" + url;
         xmlhttp.open("GET", sendUrl, false);
         xmlhttp.send();
+      }
+
+      // Distance function stuff
+      // --- cache library features after the map loads ---
+      let libraryFeatures = [];
+
+      map.on("load", async () => {
+        try {
+          // fetch the same data you used for the source so we can iterate it
+          const res = await fetch(
+            "https://neogeoweb.ca/group1/A3/librariesMTL.geojson"
+          );
+          const gj = await res.json();
+          libraryFeatures = Array.isArray(gj.features) ? gj.features : [];
+        } catch (e) {
+          console.warn(
+            "Failed to load librariesMTL GeoJSON for nearest distance calc:",
+            e
+          );
+        }
+      });
+
+      // --- haversine distance in meters ---
+      function haversineMeters(lng1, lat1, lng2, lat2) {
+        const toRad = (d) => (d * Math.PI) / 180;
+        const R = 6371000; // meters
+        const dLat = toRad(lat2 - lat1);
+        const dLng = toRad(lng2 - lng1);
+        const a =
+          Math.sin(dLat / 2) ** 2 +
+          Math.cos(toRad(lat1)) *
+            Math.cos(toRad(lat2)) *
+            Math.sin(dLng / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(a));
+      }
+
+      /**
+       * Returns the nearest library to the given coordinate.
+       * @param {number} lng longitude
+       * @param {number} lat latitude
+       * @returns {{
+       *   distanceMeters: number,
+       *   distanceKm: number,
+       *   feature: object|null,
+       *   coords: [number, number]|null
+       * }}
+       */
+      function distanceToClosestLibrary(lng, lat) {
+        if (!libraryFeatures.length) {
+          return {
+            distanceMeters: NaN,
+            distanceKm: NaN,
+            feature: null,
+            coords: null,
+          };
+        }
+
+        let best = { d: Infinity, f: null, c: null };
+
+        for (const f of libraryFeatures) {
+          if (!f || !f.geometry) continue;
+
+          if (f.geometry.type === "Point") {
+            const [flng, flat] = f.geometry.coordinates;
+            const d = haversineMeters(lng, lat, flng, flat);
+            if (d < best.d) best = { d, f, c: [flng, flat] };
+          } else if (f.geometry.type === "MultiPoint") {
+            for (const [flng, flat] of f.geometry.coordinates) {
+              const d = haversineMeters(lng, lat, flng, flat);
+              if (d < best.d) best = { d, f, c: [flng, flat] };
+            }
+          }
+          // (If libraries ever come as LineString/Polygon, you could extend this
+          // by iterating vertices; for now we assume points.)
+        }
+
+        return {
+          distanceMeters: best.d,
+          distanceKm: best.d / 1000,
+          feature: best.f,
+          coords: best.c,
+        };
       }
     </script>
   </body>

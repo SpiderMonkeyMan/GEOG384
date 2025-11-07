@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mapbox Geolocation Tracker (30s Poll + History + Dots)</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="../mapbox-token.js"></script>
+    <script src="users.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.js"></script>
+    <style>
+      :root {
+        /* adjust this if you change the bar's height/padding */
+        --header-h: 48px;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font: 12px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+
+      /* NEW: top divider bar */
+      #topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-h);
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      #topbar .bar-text {
+        font-weight: 600;
+        opacity: 0.85;
+      }
+
+      /* push the map below the divider */
+      #map {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: var(--header-h);
+        bottom: 0;
+      }
+
+      /* also push the HUD down a bit so it clears the divider */
+      #hud {
+        position: absolute;
+        top: calc(var(--header-h) + 10px);
+        left: 10px;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        padding: 8px 10px;
+        border-radius: 8px;
+        min-width: 220px;
+        max-width: 320px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .section-title {
+        margin-top: 8px;
+        font-weight: 700;
+      }
+      #history {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0 0;
+        max-height: 40vh;
+        overflow: auto;
+      }
+      #history li {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 4px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        white-space: nowrap;
+      }
+      #history li:first-child {
+        border-top: none;
+      }
+      #history .time {
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="topbar">
+      <div class="bar-text">
+        <h1 style="margin: 0; font-size: 18px">Track our Users</h1>
+      </div>
+      <div class="controls" style="margin-left: 20px">
+        <p id="controls-area"></p>
+      </div>
+    </div>
+    <!--map box-->
+    <div id="map"></div>
+
+    <script>
+      mapboxgl.accessToken = window.MAPBOX_TOKEN;
+
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: [-73.57513450282708, 45.50457976629089],
+        zoom: 17,
+      });
+
+      function toggleUser(el, number) {
+        if (el.checked) {
+          map.setPaintProperty(`${users[number]}-layer`, "circle-opacity", 1);
+          map.setPaintProperty(
+            `${users[number]}-layer`,
+            "circle-stroke-opacity",
+            1
+          );
+        } else {
+          map.setPaintProperty(`${users[number]}-layer`, "circle-opacity", 0);
+          map.setPaintProperty(
+            `${users[number]}-layer`,
+            "circle-stroke-opacity",
+            0
+          );
+        }
+      }
+      let checkboxes = "";
+      const funColors = [
+        "#FF007F", // hot pink
+        "#FFFF00", // yellow
+        "#228B22", // forest green
+        "#1E90FF", // dodger blue
+      ];
+      for (let i = 0; i < users.length; i++) {
+        checkboxes =
+          checkboxes +
+          `
+          <label>
+            <input type="checkbox" onchange="toggleUser(this, ${i})" />
+            ${users[i]}
+          </label>
+        `;
+      }
+      document.getElementById("controls-area").innerHTML = checkboxes;
+
+      for (let i = 0; i < users.length; i++) {
+        const id = users[i];
+        const layerName = `${id}-layer`;
+        map.on("load", () => {
+          map.addSource(id, {
+            type: "geojson",
+            // Use a URL for the value for the `data` property.
+            data: `https://neogeoweb.ca/group1/A3/${id}.json`,
+          });
+
+          map.addLayer({
+            id: layerName,
+            type: "circle",
+            source: id,
+            paint: {
+              "circle-radius": 4,
+              "circle-stroke-width": 2,
+              "circle-color": funColors[i],
+              "circle-stroke-color": "white",
+              "circle-opacity": 0,
+              "circle-stroke-opacity": 0,
+            },
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
