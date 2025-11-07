@@ -28,17 +28,20 @@
 
       /* NEW: top divider bar */
       #topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: var(--header-h);
+        display: flex;
+        justify-content: space-between; /* pushes left and right groups apart */
+        align-items: center;
+        padding: 0 16px; /* adds left and right spacing */
+      }
+
+      #topbar .left-group {
         display: flex;
         align-items: center;
-        padding: 0 12px;
-        background: #ffffff;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-        z-index: 10;
+        gap: 8px;
+      }
+
+      #topbar .right-group button {
+        margin-left: auto; /* ensures button stays on the right */
       }
 
       #topbar .bar-text {
@@ -106,11 +109,17 @@
   </head>
   <body>
     <div id="topbar">
-      <div class="bar-text">
-        <h1 style="margin: 0; font-size: 18px">Track our Users</h1>
-      </div>
-      <div class="controls" style="margin-left: 20px">
+      <div class="left-group">
+        <h2>See Our Users!! </h1>
         <p id="controls-area"></p>
+      </div>
+      <div class="right-group">
+        <button
+          type="button"
+          onclick="window.location.href='https://neogeoweb.ca/group1/A3/paths.html'"
+        >
+          View Tracker
+        </button>
       </div>
     </div>
     <!--map box-->

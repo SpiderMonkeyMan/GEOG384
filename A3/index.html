@@ -27,17 +27,20 @@
 
       /* NEW: top divider bar */
       #topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: var(--header-h);
+        display: flex;
+        justify-content: space-between; /* pushes left and right groups apart */
+        align-items: center;
+        padding: 0 16px; /* adds left and right spacing */
+      }
+
+      #topbar .left-group {
         display: flex;
         align-items: center;
-        padding: 0 12px;
-        background: #ffffff;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-        z-index: 10;
+        gap: 8px;
+      }
+
+      #topbar .right-group button {
+        margin-left: auto; /* ensures button stays on the right */
       }
 
       #topbar .bar-text {
@@ -106,11 +109,19 @@
   <body>
     <!-- NEW: divider above the map -->
     <div id="topbar">
-      <div class="bar-text">
+      <div class="left-group">
         <p id="button">
           <input type="text" placeholder="Type in user ID" id="user" />
-          <button type="button" onclick="userid()">submit</button>
+          <button type="button" onclick="userid()">Submit</button>
         </p>
+      </div>
+      <div class="right-group">
+        <button
+          type="button"
+          onclick="window.location.href='https://neogeoweb.ca/group1/A3/paths.html'"
+        >
+          View Paths
+        </button>
       </div>
     </div>
 
@@ -175,6 +186,7 @@
 
       const PING_INTERVAL_MS = 30000; // 30 seconds
       const HISTORY_LIMIT = 100; // keep the last 100 entries
+      const LIBRARY_DISTANCE = 50;
 
       let hasCentered = false;
       let pingCount = 0;
@@ -281,6 +293,9 @@
         const elNearest = document.getElementById("nearest");
         if (Number.isFinite(nearest.distanceMeters)) {
           elNearest.textContent = `${Math.round(nearest.distanceMeters)} m`;
+          if (nearest.distanceMeters <= LIBRARY_DISTANCE) {
+            alert(`You are within ${LIBRARY_DISTANCE} meters of a library!`);
+          }
         } else {
           elNearest.textContent = "—";
         }
@@ -318,12 +333,6 @@
         inFlight = true;
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            console.log(
-              distanceToClosestLibrary(
-                pos.coords.longitude,
-                pos.coords.latitude
-              )
-            );
             updateUI(pos);
             inFlight = false;
           },
