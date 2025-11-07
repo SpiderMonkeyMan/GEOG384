@@ -108,7 +108,7 @@
     <div id="topbar">
       <div class="bar-text">
         <p id="button">
-          <input type="text" placeholder="type in user ID" id="user" />
+          <input type="text" placeholder="Type in user ID" id="user" />
           <button type="button" onclick="userid()">submit</button>
         </p>
       </div>
@@ -128,6 +128,10 @@
       <div class="row">
         <div><strong>Lng,Lat</strong></div>
         <div id="coords" class="mono">—</div>
+      </div>
+      <div class="row">
+        <div><strong>Nearest library</strong></div>
+        <div id="nearest" class="mono">—</div>
       </div>
 
       <div class="section-title">History</div>
@@ -272,6 +276,14 @@
       function updateUI(position) {
         const { longitude: lng, latitude: lat } = position.coords;
         const now = new Date();
+
+        const nearest = distanceToClosestLibrary(lng, lat);
+        const elNearest = document.getElementById("nearest");
+        if (Number.isFinite(nearest.distanceMeters)) {
+          elNearest.textContent = `${Math.round(nearest.distanceMeters)} m`;
+        } else {
+          elNearest.textContent = "—";
+        }
 
         if (!hasCentered) {
           map.jumpTo({ center: [lng, lat], zoom: 17 });
